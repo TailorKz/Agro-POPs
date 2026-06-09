@@ -1,88 +1,98 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
   FlatList,
-  Platform
-} from 'react-native';
-import { theme } from '../theme';
-import { moderateScale, scaledFont, verticalScale } from '../utils/responsive';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+  Platform,
+ } from "react-native";
+import { theme } from "../theme";
+import { moderateScale, scaledFont, verticalScale } from "../utils/responsive";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { Modal } from 'react-native';
 
-type TaxTabType = 'Dedutível' | 'Não Dedutível';
+type TaxTabType = "Dedutível" | "Não Dedutível";
 
 const mockDespesasFiscais = [
-  { 
-    id: '1', 
-    categoria: 'Dedutível', 
-    data: '05/06/2026', 
-    descricao: 'Adubo NPK e Defensivos', 
-    detalhe: 'Insumo agrícola essencial', 
-    valor: 'R$ 8.500,00' 
+  {
+    id: "1",
+    categoria: "Dedutível",
+    data: "05/06/2026",
+    descricao: "Adubo NPK e Defensivos",
+    detalhe: "Insumo agrícola essencial",
+    valor: "R$ 8.500,00",
   },
-  { 
-    id: '2', 
-    categoria: 'Não Dedutível', 
-    data: '04/06/2026', 
-    descricao: 'Supermercado da Família', 
-    detalhe: 'Despesa de subsistência pessoal', 
-    valor: 'R$ 1.200,00' 
+  {
+    id: "2",
+    categoria: "Não Dedutível",
+    data: "04/06/2026",
+    descricao: "Supermercado da Família",
+    detalhe: "Despesa de subsistência pessoal",
+    valor: "R$ 1.200,00",
   },
-  { 
-    id: '3', 
-    categoria: 'Dedutível', 
-    data: '02/06/2026', 
-    descricao: 'Óleo Diesel p/ Trator', 
-    detalhe: 'Combustível de produção', 
-    valor: 'R$ 2.400,00' 
+  {
+    id: "3",
+    categoria: "Dedutível",
+    data: "02/06/2026",
+    descricao: "Óleo Diesel p/ Trator",
+    detalhe: "Combustível de produção",
+    valor: "R$ 2.400,00",
   },
-  { 
-    id: '4', 
-    categoria: 'Dedutível', 
-    data: '25/05/2026', 
-    descricao: 'Sementes de Milho', 
-    detalhe: 'Insumo de plantio', 
-    valor: 'R$ 5.070,00' 
+  {
+    id: "4",
+    categoria: "Dedutível",
+    data: "25/05/2026",
+    descricao: "Sementes de Milho",
+    detalhe: "Insumo de plantio",
+    valor: "R$ 5.070,00",
   },
-  { 
-    id: '5', 
-    categoria: 'Não Dedutível', 
-    data: '20/05/2026', 
-    descricao: 'Manutenção Carro de Passeio', 
-    detalhe: 'Veículo não utilitário da atividade', 
-    valor: 'R$ 850,00' 
+  {
+    id: "5",
+    categoria: "Não Dedutível",
+    data: "20/05/2026",
+    descricao: "Manutenção Carro de Passeio",
+    detalhe: "Veículo não utilitário da atividade",
+    valor: "R$ 850,00",
   },
 ];
 
 export function Dedutibilidade() {
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState<TaxTabType>('Dedutível');
-  const [activeFilter, setActiveFilter] = useState('Mês');
-  
-  const filters = ['Hoje', 'Mês', 'Ano', 'Tudo'];
+  const [activeTab, setActiveTab] = useState<TaxTabType>("Dedutível");
+  const [activeFilter, setActiveFilter] = useState("Mês");
+  const [modalFiltroVisivel, setModalFiltroVisivel] = useState(false);
+
+  const filters = ["Hoje", "Mês", "Ano", "Tudo"];
 
   const despesasFiltradas = mockDespesasFiscais.filter(
-    item => item.categoria === activeTab
+    (item) => item.categoria === activeTab,
   );
 
-  const renderItem = ({ item }: { item: typeof mockDespesasFiscais[0] }) => {
-    const isDedutivel = item.categoria === 'Dedutível';
+  const renderItem = ({ item }: { item: (typeof mockDespesasFiscais)[0] }) => {
+    const isDedutivel = item.categoria === "Dedutível";
 
     return (
       <View style={styles.cardItem}>
         <View style={styles.infoRow}>
-          <View style={[
-            styles.indicatorBadge, 
-            { backgroundColor: isDedutivel ? '#E8F5E9' : '#FFEBEE' }
-          ]}>
-            <Text style={[
-              styles.badgeText, 
-              { color: isDedutivel ? theme.colors.success : theme.colors.danger }
-            ]}>
-              {isDedutivel ? 'DEDUTÍVEL' : 'NÃO DEDUTÍVEL'}
+          <View
+            style={[
+              styles.indicatorBadge,
+              { backgroundColor: isDedutivel ? "#E8F5E9" : "#FFEBEE" },
+            ]}
+          >
+            <Text
+              style={[
+                styles.badgeText,
+                {
+                  color: isDedutivel
+                    ? theme.colors.success
+                    : theme.colors.danger,
+                },
+              ]}
+            >
+              {isDedutivel ? "DEDUTÍVEL" : "NÃO DEDUTÍVEL"}
             </Text>
           </View>
           <Text style={styles.itemData}>{item.data}</Text>
@@ -90,20 +100,25 @@ export function Dedutibilidade() {
 
         <Text style={styles.itemTitle}>{item.descricao}</Text>
         <Text style={styles.itemSubtitle}>{item.detalhe}</Text>
-        
+
         <View style={styles.priceRow}>
           <Text style={styles.priceLabel}>Valor da Nota:</Text>
           <Text style={styles.priceValue}>{item.valor}</Text>
         </View>
       </View>
+      
     );
+    
   };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Ionicons name="chevron-back" size={28} color={theme.colors.white} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Classificação Fiscal</Text>
@@ -112,36 +127,61 @@ export function Dedutibilidade() {
       {/* Filtro de Período */}
       <View style={styles.filterContainer}>
         {filters.map((filter) => {
-          if (filter === 'Tudo') {
+          if (filter === "Tudo") {
             return (
-              <TouchableOpacity key={filter} style={styles.filterButton}>
-                <Ionicons name="options-outline" size={20} color={theme.colors.text.main} />
+              <TouchableOpacity
+                key={filter}
+                style={styles.filterButton}
+                onPress={() => setModalFiltroVisivel(true)}
+              >
+                <Ionicons
+                  name="options-outline"
+                  size={20}
+                  color={theme.colors.text.main}
+                />
               </TouchableOpacity>
             );
           }
           return (
-            <TouchableOpacity 
+            <TouchableOpacity
               key={filter}
-              style={[styles.filterButton, activeFilter === filter && styles.filterButtonActive]}
+              style={[
+                styles.filterButton,
+                activeFilter === filter && styles.filterButtonActive,
+              ]}
               onPress={() => setActiveFilter(filter)}
             >
-              <Text style={[styles.filterText, activeFilter === filter && styles.filterTextActive]}>
+              <Text
+                style={[
+                  styles.filterText,
+                  activeFilter === filter && styles.filterTextActive,
+                ]}
+              >
                 {filter}
               </Text>
             </TouchableOpacity>
           );
         })}
+        
       </View>
 
       {/* Abas Dedutível / Não Dedutível */}
       <View style={styles.tabsContainer}>
-        {(['Dedutível', 'Não Dedutível'] as TaxTabType[]).map((tab) => (
-          <TouchableOpacity 
+        {(["Dedutível", "Não Dedutível"] as TaxTabType[]).map((tab) => (
+          <TouchableOpacity
             key={tab}
-            style={[styles.tabButton, activeTab === tab && styles.tabButtonActive]}
+            style={[
+              styles.tabButton,
+              activeTab === tab && styles.tabButtonActive,
+            ]}
             onPress={() => setActiveTab(tab)}
           >
-            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab && styles.tabTextActive,
+              ]}
+            >
               {tab}
             </Text>
           </TouchableOpacity>
@@ -151,13 +191,41 @@ export function Dedutibilidade() {
       {/* Lista de Itens Fiscais */}
       <FlatList
         data={despesasFiltradas}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalFiltroVisivel}
+  onRequestClose={() => setModalFiltroVisivel(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <View style={styles.modalHeader}>
+        <Text style={styles.modalTitle}>Filtrar Período</Text>
+        <TouchableOpacity onPress={() => setModalFiltroVisivel(false)}>
+          <Ionicons name="close" size={24} color={theme.colors.text.main} />
+        </TouchableOpacity>
+      </View>
+      
+      {/* Aqui dentro depois conectaremos uma biblioteca de calendário como a react-native-calendars */}
+      <Text style={{ color: theme.colors.text.light, marginVertical: 20 }}>
+        Seletor de Calendário virá aqui...
+      </Text>
+
+      <TouchableOpacity style={styles.primaryButton} onPress={() => setModalFiltroVisivel(false)}>
+        <Text style={styles.primaryButtonText}>Aplicar Filtro</Text>
+      </TouchableOpacity>
     </View>
+  </View>
+</Modal>
+    </View>
+    
   );
+  
 }
 
 const styles = StyleSheet.create({
@@ -168,26 +236,26 @@ const styles = StyleSheet.create({
   header: {
     height: verticalScale(110),
     backgroundColor: theme.colors.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: Platform.OS === 'ios' ? verticalScale(40) : verticalScale(20),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: Platform.OS === "ios" ? verticalScale(40) : verticalScale(20),
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     left: moderateScale(16),
-    top: Platform.OS === 'ios' ? verticalScale(50) : verticalScale(30),
+    top: Platform.OS === "ios" ? verticalScale(50) : verticalScale(30),
     padding: moderateScale(8),
     zIndex: 10,
   },
   headerTitle: {
     color: theme.colors.white,
     fontSize: theme.typography.subtitle,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   filterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: theme.spacing.medium,
     paddingVertical: verticalScale(12),
     backgroundColor: theme.colors.white,
@@ -196,9 +264,9 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(6),
     paddingHorizontal: moderateScale(16),
     borderRadius: moderateScale(20),
-    backgroundColor: '#E0E0E0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#E0E0E0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   filterButtonActive: {
     backgroundColor: theme.colors.primary,
@@ -206,25 +274,25 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: theme.typography.small,
     color: theme.colors.text.main,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   filterTextActive: {
     color: theme.colors.white,
   },
   tabsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: theme.colors.white,
     paddingHorizontal: theme.spacing.medium,
     paddingBottom: verticalScale(12),
     borderBottomWidth: 1,
-    borderBottomColor: '#EAEAEA',
+    borderBottomColor: "#EAEAEA",
   },
   tabButton: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: verticalScale(10),
     borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    borderBottomColor: "transparent",
   },
   tabButtonActive: {
     borderBottomColor: theme.colors.primary,
@@ -232,11 +300,11 @@ const styles = StyleSheet.create({
   tabText: {
     color: theme.colors.text.light,
     fontSize: theme.typography.body,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   tabTextActive: {
     color: theme.colors.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   listContent: {
     padding: theme.spacing.medium,
@@ -246,16 +314,16 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.card,
     padding: theme.spacing.large,
     marginBottom: verticalScale(16),
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
     elevation: 2,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: verticalScale(12),
   },
   indicatorBadge: {
@@ -265,7 +333,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: scaledFont(10),
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   itemData: {
     fontSize: theme.typography.small,
@@ -274,7 +342,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: theme.typography.subtitle,
     color: theme.colors.text.main,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   itemSubtitle: {
@@ -283,11 +351,11 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(16),
   },
   priceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: '#F5F5F5',
+    borderTopColor: "#F5F5F5",
     paddingTop: verticalScale(12),
   },
   priceLabel: {
@@ -296,7 +364,61 @@ const styles = StyleSheet.create({
   },
   priceValue: {
     fontSize: theme.typography.subtitle,
+    fontWeight: "bold",
+    color: theme.colors.text.main,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escuro com 50% de transparência
+    justifyContent: 'flex-end', // Alinha o conteúdo na base da tela
+  },
+  modalContent: {
+    backgroundColor: theme.colors.white,
+    borderTopLeftRadius: theme.borderRadius.card,
+    borderTopRightRadius: theme.borderRadius.card,
+    padding: theme.spacing.large,
+    paddingBottom: verticalScale(34), // Espaço extra para a barra de navegação do iPhone
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(16),
+  },
+  modalTitle: {
+    fontSize: theme.typography.subtitle,
     fontWeight: 'bold',
     color: theme.colors.text.main,
+  },
+  modalPlaceholderText: {
+    color: theme.colors.text.light,
+    fontSize: theme.typography.body,
+    marginVertical: verticalScale(24),
+    textAlign: 'center',
+  },
+  modalApplyButton: {
+    backgroundColor: theme.colors.primary,
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalApplyButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.body,
+    fontWeight: 'bold',
+  },
+   primaryButton: {
+    backgroundColor: theme.colors.primary,
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: verticalScale(24),
+  },
+  primaryButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.subtitle,
+    fontWeight: 'bold',
   },
 });

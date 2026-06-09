@@ -12,7 +12,7 @@ import {
 import { RootStackParamList } from "../routes";
 import { theme } from "../theme";
 import { moderateScale, scaledFont, verticalScale } from "../utils/responsive";
-
+import { Modal } from 'react-native';
 export function Home() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -26,7 +26,7 @@ export function Home() {
     dedutivel: "R$ 12.450,00",
     naoDedutivel: "R$ 4.320,00",
   };
-
+const [modalFiltroVisivel, setModalFiltroVisivel] = useState(false);
   const filters = ["Hoje", "Mês", "Ano", "Tudo"];
 
   return (
@@ -63,9 +63,7 @@ export function Home() {
                 <TouchableOpacity
                   key={filter}
                   style={styles.filterButton}
-                  onPress={() =>
-                    console.log("Abrir modal de calendário/filtros avançados")
-                  }
+                  onPress={() => setModalFiltroVisivel(true)}
                 >
                   <Ionicons
                     name="options-outline"
@@ -180,7 +178,7 @@ export function Home() {
         {/* SEÇÃO: Ações Rápidas */}
         <Text style={styles.sectionTitle}>Ações Rápidas</Text>
         <View style={styles.actionsGrid}>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('Chat')}>
             <View
               style={[styles.actionIconCircle, { backgroundColor: "#E8F5E9" }]}
             >
@@ -203,6 +201,31 @@ export function Home() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalFiltroVisivel}
+  onRequestClose={() => setModalFiltroVisivel(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <View style={styles.modalHeader}>
+        <Text style={styles.modalTitle}>Filtrar Período</Text>
+        <TouchableOpacity onPress={() => setModalFiltroVisivel(false)}>
+          <Ionicons name="close" size={24} color={theme.colors.text.main} />
+        </TouchableOpacity>
+      </View>
+      
+      <Text style={{ color: theme.colors.text.light, marginVertical: 20 }}>
+        Seletor de Calendário virá aqui...
+      </Text>
+
+      <TouchableOpacity style={styles.primaryButton} onPress={() => setModalFiltroVisivel(false)}>
+        <Text style={styles.primaryButtonText}>Aplicar Filtro</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
     </View>
   );
 }
@@ -394,5 +417,59 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: theme.colors.text.main,
     textAlign: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escuro com 50% de transparência
+    justifyContent: 'flex-end', // Alinha o conteúdo na base da tela
+  },
+  modalContent: {
+    backgroundColor: theme.colors.white,
+    borderTopLeftRadius: theme.borderRadius.card,
+    borderTopRightRadius: theme.borderRadius.card,
+    padding: theme.spacing.large,
+    paddingBottom: verticalScale(34), // Espaço extra para a barra de navegação do iPhone
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(16),
+  },
+  modalTitle: {
+    fontSize: theme.typography.subtitle,
+    fontWeight: 'bold',
+    color: theme.colors.text.main,
+  },
+  modalPlaceholderText: {
+    color: theme.colors.text.light,
+    fontSize: theme.typography.body,
+    marginVertical: verticalScale(24),
+    textAlign: 'center',
+  },
+  modalApplyButton: {
+    backgroundColor: theme.colors.primary,
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalApplyButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.body,
+    fontWeight: 'bold',
+  },
+   primaryButton: {
+    backgroundColor: theme.colors.primary,
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: verticalScale(24),
+  },
+  primaryButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.subtitle,
+    fontWeight: 'bold',
   },
 });

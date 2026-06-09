@@ -11,6 +11,7 @@ import { theme } from '../theme';
 import { moderateScale, verticalScale } from '../utils/responsive';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { Modal } from 'react-native';
 
 // Tipagem das abas
 type TabType = 'Todas' | 'Entradas' | 'Saídas';
@@ -63,6 +64,7 @@ export function Extrato() {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<TabType>('Todas');
  const [activeFilter, setActiveFilter] = useState('Mês');
+ const [modalFiltroVisivel, setModalFiltroVisivel] = useState(false);
     const filters = ['Hoje', 'Mês', 'Ano', 'Tudo'];
   // Lógica de filtro baseada na aba selecionada
   const notasFiltradas = mockNotas.filter(nota => {
@@ -70,9 +72,9 @@ export function Extrato() {
     if (activeTab === 'Entradas' && nota.tipo === 'entrada') return true;
     if (activeTab === 'Saídas' && nota.tipo === 'saida') return true;
     return false;
+    
   });
 
-  // Como cada "card" de nota será desenhado na tela
   const renderItem = ({ item }: { item: typeof mockNotas[0] }) => {
     const isEntrada = item.tipo === 'entrada';
 
@@ -87,7 +89,7 @@ export function Extrato() {
             { backgroundColor: isEntrada ? '#E8F5E9' : '#FFEBEE' }
           ]}>
             <Ionicons 
-              name={isEntrada ? "arrow-down-circle" : "arrow-up-circle"} // Seta p/ baixo (dinheiro entrando) ou p/ cima (saindo)
+              name={isEntrada ? "arrow-down-circle" : "arrow-up-circle"}
               size={28} 
               color={isEntrada ? theme.colors.success : theme.colors.danger} 
             />
@@ -126,16 +128,16 @@ export function Extrato() {
     <View style={styles.filterContainer}>
       {filters.map((filter) => {
         if (filter === 'Tudo') {
-          return (
-            <TouchableOpacity 
-              key={filter}
-              style={styles.filterButton}
-              onPress={() => console.log('Abrir modal de calendário')}
-            >
-              <Ionicons name="options-outline" size={20} color={theme.colors.text.main} />
-            </TouchableOpacity>
-          );
-        }
+  return (
+    <TouchableOpacity 
+      key={filter}
+      style={styles.filterButton}
+      onPress={() => setModalFiltroVisivel(true)}
+    >
+      <Ionicons name="options-outline" size={20} color={theme.colors.text.main} />
+    </TouchableOpacity>
+  );
+}
 
         return (
           <TouchableOpacity 
@@ -187,6 +189,31 @@ export function Extrato() {
           </View>
         }
       />
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalFiltroVisivel}
+  onRequestClose={() => setModalFiltroVisivel(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <View style={styles.modalHeader}>
+        <Text style={styles.modalTitle}>Filtrar Período</Text>
+        <TouchableOpacity onPress={() => setModalFiltroVisivel(false)}>
+          <Ionicons name="close" size={24} color={theme.colors.text.main} />
+        </TouchableOpacity>
+      </View>
+      
+      <Text style={{ color: theme.colors.text.light, marginVertical: 20 }}>
+        Seletor de Calendário virá aqui...
+      </Text>
+
+      <TouchableOpacity style={styles.primaryButton} onPress={() => setModalFiltroVisivel(false)}>
+        <Text style={styles.primaryButtonText}>Aplicar Filtro</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
     </View>
   );
 }
@@ -231,7 +258,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20),
   },
   tabButtonActive: {
-    backgroundColor: '#E8F5E9', // Fundo verdinho claro para a aba ativa
+    backgroundColor: '#E8F5E9',
   },
   tabText: {
     color: theme.colors.text.light,
@@ -262,7 +289,7 @@ const styles = StyleSheet.create({
   notaInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1, // Faz a descrição ocupar o espaço disponível e não empurrar os valores pra fora
+    flex: 1,
   },
   iconContainer: {
     width: moderateScale(48),
@@ -335,5 +362,59 @@ const styles = StyleSheet.create({
   },
   filterTextActive: {
     color: theme.colors.white,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escuro com 50% de transparência
+    justifyContent: 'flex-end', // Alinha o conteúdo na base da tela
+  },
+  modalContent: {
+    backgroundColor: theme.colors.white,
+    borderTopLeftRadius: theme.borderRadius.card,
+    borderTopRightRadius: theme.borderRadius.card,
+    padding: theme.spacing.large,
+    paddingBottom: verticalScale(34), // Espaço extra para a barra de navegação do iPhone
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: verticalScale(16),
+  },
+  modalTitle: {
+    fontSize: theme.typography.subtitle,
+    fontWeight: 'bold',
+    color: theme.colors.text.main,
+  },
+  modalPlaceholderText: {
+    color: theme.colors.text.light,
+    fontSize: theme.typography.body,
+    marginVertical: verticalScale(24),
+    textAlign: 'center',
+  },
+  modalApplyButton: {
+    backgroundColor: theme.colors.primary,
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalApplyButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.body,
+    fontWeight: 'bold',
+  },
+   primaryButton: {
+    backgroundColor: theme.colors.primary,
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: verticalScale(24),
+  },
+  primaryButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.subtitle,
+    fontWeight: 'bold',
   },
 });

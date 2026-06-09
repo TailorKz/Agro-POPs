@@ -8,6 +8,7 @@ import { Register } from '../screens/Register';
 import { Home } from '../screens/Home';
 import { Extrato } from '../screens/Extrato';
 import { Dedutibilidade } from '../screens/Dedutibilidade';
+import { Chat } from '../screens/Chat';
 
 // Definindo as tipagens das rotas (padrão TypeScript para autocomplete)
 export type RootStackParamList = {
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Home: undefined;
   Extrato: undefined;
   Dedutibilidade: undefined;
+  Chat: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -27,7 +29,7 @@ export function Routes() {
       <Stack.Navigator 
         initialRouteName="Welcome"
         screenOptions={{
-          headerShown: false, // Escondemos o header padrão, pois fizemos o nosso próprio
+          headerShown: false, // Esconde o header padrão
           animation: 'slide_from_right' // Animação suave padrão de iOS/Android
         }}
       >
@@ -37,6 +39,7 @@ export function Routes() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Extrato" component={Extrato} />
         <Stack.Screen name="Dedutibilidade" component={Dedutibilidade} />
+        <Stack.Screen name="Chat" component={Chat} />
       </Stack.Navigator>
     </NavigationContainer>
   );
