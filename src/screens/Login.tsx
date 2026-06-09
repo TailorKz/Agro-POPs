@@ -1,87 +1,123 @@
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import {
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
-import { theme } from "../theme";
-import { moderateScale, verticalScale } from "../utils/responsive";
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  // TextInput,  <-- Remova o TextInput padrão
+  TouchableOpacity, 
+  StyleSheet, 
+  KeyboardAvoidingView, 
+  Platform,
+  ScrollView,
+  Dimensions
+} from 'react-native';
+import { theme } from '../theme';
+import { moderateScale, verticalScale } from '../utils/responsive';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../routes';
 
-const { height } = Dimensions.get("window");
+// 1. Importar a máscara e as definições
+import MaskInput, { Masks } from 'react-native-mask-input';
+
+const { height } = Dimensions.get('window');
 
 export function Login() {
-  const [documento, setDocumento] = useState("");
-  const [senha, setSenha] = useState("");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [documento, setDocumento] = useState('');
+  const [senha, setSenha] = useState('');
+  
+  // 2. Estado para controlar o "olhinho" da senha
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  // Função provisória para simular o login e ir para a home
+  function handleLogin() {
+  // Por enquanto simula o login direto. Mais tarde, validaremos com o backend Java.
+  if (documento && senha) {
+    navigation.replace('Home');
+  } else {
+    // Caso queira testar sem preencher, pode deixar apenas a linha abaixo solta:
+    navigation.replace('Home');
+  }
+}
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho Verde (30% da tela) */}
+      {/* Header com botão de voltar */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={28} color={theme.colors.white} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Acesse sua conta</Text>
       </View>
 
-      {/* Cartão Branco (Ocupa o resto da tela) */}
-      <KeyboardAvoidingView
+      <KeyboardAvoidingView 
         style={styles.keyboardContainer}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.card}>
-          <ScrollView
+          <ScrollView 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
             <Text style={styles.title}>Bem-vindo de volta!</Text>
-            <Text style={styles.subtitle}>
-              Insira seus dados para continuar.
-            </Text>
+            <Text style={styles.subtitle}>Insira seus dados para continuar.</Text>
 
             <View style={styles.formContainer}>
               <Text style={styles.label}>CPF ou CNPJ</Text>
-              <TextInput
+              
+              {/* 3. Substituir pelo MaskInput */}
+              <MaskInput
                 style={styles.input}
-                placeholder="Ex: 000.000.000-00"
+                value={documento}
+                onChangeText={(masked, unmasked) => {
+                  setDocumento(unmasked); // Guardamos o valor sem pontos/hifens
+                }}
+                // A mágica acontece aqui: ele detecta o tamanho e aplica CPF ou CNPJ
+                mask={Masks.BRL_CPF_CNPJ} 
+                placeholder="000.000.000-00 ou 00.000..."
                 placeholderTextColor={theme.colors.text.light}
                 keyboardType="number-pad"
-                value={documento}
-                onChangeText={setDocumento}
               />
 
               <Text style={styles.label}>Senha</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="••••••••"
-                placeholderTextColor={theme.colors.text.light}
-                secureTextEntry
-                value={senha}
-                onChangeText={setSenha}
-              />
+              
+              {/* Container para alinhar o input e o ícone */}
+              <View style={styles.passwordInputContainer}>
+                <MaskInput // Usamos MaskInput aqui também para manter o estilo
+                  style={styles.passwordInput}
+                  placeholder="••••••••"
+                  placeholderTextColor={theme.colors.text.light}
+                  // 4. Controlar visibilidade baseada no estado
+                  secureTextEntry={!isPasswordVisible}
+                  value={senha}
+                  onChangeText={setSenha}
+                />
+                
+                {/* 5. O Botão do Olhinho */}
+                <TouchableOpacity 
+                  style={styles.eyeIcon} 
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                >
+                  <Ionicons 
+                    name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+                    size={22} 
+                    color={theme.colors.text.light} 
+                  />
+                </TouchableOpacity>
+              </View>
 
               <TouchableOpacity style={styles.forgotPassword}>
                 <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.primaryButton}>
+              <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
                 <Text style={styles.primaryButtonText}>Entrar</Text>
               </TouchableOpacity>
 
               <View style={styles.footer}>
                 <Text style={styles.footerText}>Ainda não tem conta? </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                   <Text style={styles.footerLink}>Cadastre-se</Text>
                 </TouchableOpacity>
               </View>
@@ -92,7 +128,6 @@ export function Login() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -158,8 +193,35 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(8),
     marginLeft: moderateScale(4),
   },
+  // Estilo para o container da senha
+  passwordInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    marginBottom: verticalScale(20),
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+    position: 'relative',
+  },
+  passwordInput: {
+    flex: 1, // Ocupa todo o espaço
+    height: '100%',
+    paddingHorizontal: moderateScale(16),
+    fontSize: theme.typography.body,
+    color: theme.colors.text.main,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: moderateScale(16),
+    height: '100%',
+    justifyContent: 'center',
+    paddingLeft: moderateScale(10), // Aumenta área de toque
+  },
+  
   input: {
-    backgroundColor: "#F9F9F9",
+    backgroundColor: '#F9F9F9',
     height: verticalScale(54),
     borderRadius: theme.borderRadius.button,
     paddingHorizontal: moderateScale(16),
@@ -167,7 +229,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text.main,
     marginBottom: verticalScale(20),
     borderWidth: 1,
-    borderColor: "#EAEAEA",
+    borderColor: '#EAEAEA',
   },
   forgotPassword: {
     alignSelf: "flex-end",

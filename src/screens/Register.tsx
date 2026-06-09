@@ -1,92 +1,112 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
-import {
-  Dimensions,
-  KeyboardAvoidingView,
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  KeyboardAvoidingView, 
   Platform,
   ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { theme } from "../theme";
-import { moderateScale, verticalScale } from "../utils/responsive";
+  Dimensions
+} from 'react-native';
+import { theme } from '../theme';
+import { moderateScale, verticalScale } from '../utils/responsive';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../routes';
+import MaskInput, { Masks } from 'react-native-mask-input';
+
 const { height } = Dimensions.get('window');
 
 export function Register() {
-  const [nome, setNome] = useState("");
-  const [documento, setDocumento] = useState("");
-  const [senha, setSenha] = useState("");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  
+  const [nome, setNome] = useState('');
+  const [documento, setDocumento] = useState('');
+  const [senha, setSenha] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  function handleRegister() {
+    console.log('Cadastro:', nome, documento, senha);
+    // Integração futura com o backend Spring Boot
+  }
+
   return (
     <View style={styles.container}>
+      {/* Header com botão de voltar */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={28} color={theme.colors.white} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Criar conta</Text>
+        <Text style={styles.headerTitle}>Criar Conta</Text>
       </View>
 
-      <KeyboardAvoidingView
+      <KeyboardAvoidingView 
         style={styles.keyboardContainer}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.card}>
-          <ScrollView
+          <ScrollView 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
             <Text style={styles.title}>Dados Pessoais</Text>
-            <Text style={styles.subtitle}>
-              Preencha para acessar seu painel.
-            </Text>
+            <Text style={styles.subtitle}>Preencha os campos para começar a gerenciar sua produção.</Text>
 
             <View style={styles.formContainer}>
+              {/* Nome Completo */}
               <Text style={styles.label}>Nome Completo</Text>
-              <TextInput
+              <MaskInput
                 style={styles.input}
-                placeholder="Digite seu nome"
+                placeholder="Digite seu nome completo"
                 placeholderTextColor={theme.colors.text.light}
                 value={nome}
                 onChangeText={setNome}
               />
 
+              {/* CPF ou CNPJ com Máscara Dinâmica */}
               <Text style={styles.label}>CPF ou CNPJ</Text>
-              <TextInput
+              <MaskInput
                 style={styles.input}
-                placeholder="Apenas números"
+                value={documento}
+                onChangeText={(masked, unmasked) => setDocumento(unmasked)}
+                mask={Masks.BRL_CPF_CNPJ} 
+                placeholder="000.000.000-00 ou 00.000..."
                 placeholderTextColor={theme.colors.text.light}
                 keyboardType="number-pad"
-                value={documento}
-                onChangeText={setDocumento}
               />
 
-              <Text style={styles.label}>Senha</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Crie uma senha forte"
-                placeholderTextColor={theme.colors.text.light}
-                secureTextEntry
-                value={senha}
-                onChangeText={setSenha}
-              />
+              {/* Senha com Olhinho */}
+              <Text style={styles.label}>Senha de Acesso</Text>
+              <View style={styles.passwordInputContainer}>
+                <MaskInput
+                  style={styles.passwordInput}
+                  placeholder="Crie uma senha forte"
+                  placeholderTextColor={theme.colors.text.light}
+                  secureTextEntry={!isPasswordVisible}
+                  value={senha}
+                  onChangeText={setSenha}
+                />
+                <TouchableOpacity 
+                  style={styles.eyeIcon} 
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                >
+                  <Ionicons 
+                    name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+                    size={22} 
+                    color={theme.colors.text.light} 
+                  />
+                </TouchableOpacity>
+              </View>
 
-              {/* Botão de Cadastro */}
-              <TouchableOpacity
-                style={[styles.primaryButton, { marginTop: verticalScale(16) }]}
-              >
+              <TouchableOpacity style={[styles.primaryButton, { marginTop: verticalScale(16) }]} onPress={handleRegister}>
                 <Text style={styles.primaryButtonText}>Finalizar Cadastro</Text>
               </TouchableOpacity>
 
               <View style={styles.footer}>
                 <Text style={styles.footerText}>Já possui uma conta? </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                   <Text style={styles.footerLink}>Fazer Login</Text>
                 </TouchableOpacity>
               </View>
@@ -104,15 +124,15 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   header: {
-    height: height * 0.3,
+    height: height * 0.30,
     backgroundColor: theme.colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingTop: verticalScale(40),
-    position: "relative",
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: verticalScale(40), 
+    position: 'relative',
   },
   backButton: {
-    position: "absolute",
+    position: 'absolute',
     left: moderateScale(20),
     top: verticalScale(60),
     zIndex: 10,
@@ -121,7 +141,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: theme.colors.white,
     fontSize: theme.typography.title,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   keyboardContainer: {
     flex: 1,
@@ -132,7 +152,7 @@ const styles = StyleSheet.create({
     marginTop: -verticalScale(40),
     borderTopLeftRadius: moderateScale(30),
     borderTopRightRadius: moderateScale(30),
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -145,7 +165,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: theme.typography.title,
     color: theme.colors.text.main,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: verticalScale(8),
   },
   subtitle: {
@@ -154,17 +174,17 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(32),
   },
   formContainer: {
-    width: "100%",
+    width: '100%',
   },
   label: {
     fontSize: theme.typography.small,
     color: theme.colors.text.main,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: verticalScale(8),
     marginLeft: moderateScale(4),
   },
   input: {
-    backgroundColor: "#F9F9F9",
+    backgroundColor: '#F9F9F9',
     height: verticalScale(54),
     borderRadius: theme.borderRadius.button,
     paddingHorizontal: moderateScale(16),
@@ -172,34 +192,50 @@ const styles = StyleSheet.create({
     color: theme.colors.text.main,
     marginBottom: verticalScale(20),
     borderWidth: 1,
-    borderColor: "#EAEAEA",
+    borderColor: '#EAEAEA',
   },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: verticalScale(32),
+  passwordInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+    height: verticalScale(54),
+    borderRadius: theme.borderRadius.button,
+    marginBottom: verticalScale(20),
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+    position: 'relative',
   },
-  forgotPasswordText: {
-    color: theme.colors.primary,
+  passwordInput: {
+    flex: 1,
+    height: '100%',
+    paddingHorizontal: moderateScale(16),
     fontSize: theme.typography.body,
-    fontWeight: "600",
+    color: theme.colors.text.main,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: moderateScale(16),
+    height: '100%',
+    justifyContent: 'center',
+    paddingLeft: moderateScale(10),
   },
   primaryButton: {
     backgroundColor: theme.colors.primary,
     height: verticalScale(54),
     borderRadius: theme.borderRadius.button,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: verticalScale(24),
   },
   primaryButtonText: {
     color: theme.colors.white,
     fontSize: theme.typography.subtitle,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   footerText: {
     color: theme.colors.text.light,
@@ -208,6 +244,6 @@ const styles = StyleSheet.create({
   footerLink: {
     color: theme.colors.primary,
     fontSize: theme.typography.body,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
