@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   View, 
   Text, 
-  // TextInput,  <-- Remova o TextInput padrão
   TouchableOpacity, 
   StyleSheet, 
   KeyboardAvoidingView, 
@@ -17,7 +16,6 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../routes';
 
-// 1. Importar a máscara e as definições
 import MaskInput, { Masks } from 'react-native-mask-input';
 
 const { height } = Dimensions.get('window');
@@ -27,16 +25,15 @@ export function Login() {
   const [documento, setDocumento] = useState('');
   const [senha, setSenha] = useState('');
   
-  // 2. Estado para controlar o "olhinho" da senha
+  // 2. Estado para controlar o "olho" da senha
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   // Função provisória para simular o login e ir para a home
   function handleLogin() {
-  // Por enquanto simula o login direto. Mais tarde, validaremos com o backend Java.
+  // Mais tarde será validado com o backend Java.
   if (documento && senha) {
     navigation.replace('Home');
   } else {
-    // Caso queira testar sem preencher, pode deixar apenas a linha abaixo solta:
     navigation.replace('Home');
   }
 }
@@ -59,6 +56,7 @@ export function Login() {
           <ScrollView 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
           >
             <Text style={styles.title}>Bem-vindo de volta!</Text>
             <Text style={styles.subtitle}>Insira seus dados para continuar.</Text>
@@ -66,14 +64,13 @@ export function Login() {
             <View style={styles.formContainer}>
               <Text style={styles.label}>CPF ou CNPJ</Text>
               
-              {/* 3. Substituir pelo MaskInput */}
+              {/* 3. MaskInput */}
               <MaskInput
                 style={styles.input}
                 value={documento}
                 onChangeText={(masked, unmasked) => {
-                  setDocumento(unmasked); // Guardamos o valor sem pontos/hifens
+                  setDocumento(unmasked);
                 }}
-                // A mágica acontece aqui: ele detecta o tamanho e aplica CPF ou CNPJ
                 mask={Masks.BRL_CPF_CNPJ} 
                 placeholder="000.000.000-00 ou 00.000..."
                 placeholderTextColor={theme.colors.text.light}
@@ -84,17 +81,16 @@ export function Login() {
               
               {/* Container para alinhar o input e o ícone */}
               <View style={styles.passwordInputContainer}>
-                <MaskInput // Usamos MaskInput aqui também para manter o estilo
+                <MaskInput
                   style={styles.passwordInput}
                   placeholder="••••••••"
                   placeholderTextColor={theme.colors.text.light}
-                  // 4. Controlar visibilidade baseada no estado
                   secureTextEntry={!isPasswordVisible}
                   value={senha}
                   onChangeText={setSenha}
                 />
                 
-                {/* 5. O Botão do Olhinho */}
+                {/* 5. O Botão do olho */}
                 <TouchableOpacity 
                   style={styles.eyeIcon} 
                   onPress={() => setIsPasswordVisible(!isPasswordVisible)}

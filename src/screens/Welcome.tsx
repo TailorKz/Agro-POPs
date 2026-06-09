@@ -31,7 +31,7 @@ export function Welcome() {
       >
         {/* Overlay escuro para dar contraste à Logo */}
         <View style={styles.overlay}>
-          {/* Sessão Superior (Imagem e Logo) */}
+          {/* Sessão Superior */}
           <View style={styles.logoContainer}>
             <Image
               source={require("../../assets/images/logo.png")}

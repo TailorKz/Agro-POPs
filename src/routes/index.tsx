@@ -6,6 +6,8 @@ import { Welcome } from '../screens/Welcome';
 import { Login } from '../screens/Login';
 import { Register } from '../screens/Register';
 import { Home } from '../screens/Home';
+import { Extrato } from '../screens/Extrato';
+import { Dedutibilidade } from '../screens/Dedutibilidade';
 
 // Definindo as tipagens das rotas (padrão TypeScript para autocomplete)
 export type RootStackParamList = {
@@ -13,6 +15,8 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Home: undefined;
+  Extrato: undefined;
+  Dedutibilidade: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +35,8 @@ export function Routes() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Extrato" component={Extrato} />
+        <Stack.Screen name="Dedutibilidade" component={Dedutibilidade} />
       </Stack.Navigator>
     </NavigationContainer>
   );

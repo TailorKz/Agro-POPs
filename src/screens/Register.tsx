@@ -28,8 +28,11 @@ export function Register() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   function handleRegister() {
-    console.log('Cadastro:', nome, documento, senha);
-    // Integração futura com o backend Spring Boot
+    if (documento && senha) {
+    navigation.replace('Home');
+  } else {
+    navigation.replace('Home');
+  }
   }
 
   return (
@@ -50,6 +53,7 @@ export function Register() {
           <ScrollView 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
           >
             <Text style={styles.title}>Dados Pessoais</Text>
             <Text style={styles.subtitle}>Preencha os campos para começar a gerenciar sua produção.</Text>
@@ -65,19 +69,19 @@ export function Register() {
                 onChangeText={setNome}
               />
 
-              {/* CPF ou CNPJ com Máscara Dinâmica */}
+              {/* CPF ou CNPJ com Máscara */}
               <Text style={styles.label}>CPF ou CNPJ</Text>
               <MaskInput
                 style={styles.input}
                 value={documento}
                 onChangeText={(masked, unmasked) => setDocumento(unmasked)}
                 mask={Masks.BRL_CPF_CNPJ} 
-                placeholder="000.000.000-00 ou 00.000..."
+                placeholder="CPF/CNPJ"
                 placeholderTextColor={theme.colors.text.light}
                 keyboardType="number-pad"
               />
 
-              {/* Senha com Olhinho */}
+              {/* Senha */}
               <Text style={styles.label}>Senha de Acesso</Text>
               <View style={styles.passwordInputContainer}>
                 <MaskInput
